@@ -1,135 +1,97 @@
-#ifndef MONTY_H
-#define MONTY_H
+#ifndef _MONTY_H_
+#define _MONTY_H_
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 
+/*extern variable, stack or queue*/
+
+extern char *flag;
+
+#define BUF_LENGTH 1024
+
 /**
- * struct stack_s - doubly linked list, represents a stack or queue
- * @n: int
- * @prev: points to previous element in stack
- * @next: points to next element in stack
+ * struct stack_s - doubly linked list representation of a stack (or queue)
+ * @n: integer
+ * @prev: points to the previous element of the stack (or queue)
+ * @next: points to the next element of the stack (or queue)
  *
  * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO ALX project
+ * for stack, queues, LIFO, FIFO Holberton project
  */
 typedef struct stack_s
 {
-	int n;
-	struct stack_s *prev;
-	struct stack_s *next;
+	        int n;
+		        struct stack_s *prev;
+			        struct stack_s *next;
 } stack_t;
 
 /**
- * struct instruction_s - opcode and its function
+ * struct instruction_s - opcoode and its function
  * @opcode: the opcode
  * @f: function to handle the opcode
  *
  * Description: opcode and its function
- * for stack, queues, LIFO, FIFO ALX project
+ * for stack, queues, LIFO, FIFO Holberton project
  */
 typedef struct instruction_s
 {
-	char *opcode;
-	void (*f)(stack_t **stack, unsigned int line_number);
+	        char *opcode;
+		        void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-/**
- * struct args_s - structure of arguments from main
- * @av: name of the file from the command line
- * @ac: number of arguments from main
- * @line_number: number of the current line in the file
- *
- * Description: arguments passed to main from the command line
- * used in different functions, organized in a struct for clarity
- */
-typedef struct args_s
-{
-	char *av;
-	int ac;
-	unsigned int line_number;
-} args_t;
 
-/**
- * struct data_s - extern data to access inside functions
- * @line: line from the file
- * @words: parsed line
- * @stack: pointer to the stack
- * @fptr: file pointer
- * @qflag: flag for queue or stack
- */
-typedef struct data_s
-{
-	char *line;
-	char **words;
-	stack_t *stack;
-	FILE *fptr;
-	int qflag;
-} data_t;
 
-typedef stack_t dlistint_t
+/*basic functions related to doubly linked list*/
+stack_t *add_node(stack_t **head, const int n);
+void free_stack(stack_t *head);
+stack_t *pop_s(stack_t **head);
+stack_t *dequeue(stack_t **head);
+stack_t *add_node_end(stack_t **head, int n);
 
-extern data_t data;
+/*functions to print the stack or queue*/
+void pall(stack_t **h, unsigned int l);
+void pstr(stack_t **h, unsigned int l);
+void pchar(stack_t **h, unsigned int l);
+void pint(stack_t **h, unsigned int l);
 
-#define DATA_INIT {NULL, NULL, NULL, NULL, 0}
+/*in push_and_pop*/
+void pop(stack_t **h, unsigned int l);
+int push (stack_t **h, char *line, unsigned int l);
 
-#define USAGE "USAGE: monty file\n"
-#define FILE_ERROR "Error: Can't open file %s\n"
-#define UNKNOWN "L%u: unknown instruction %s\n"
-#define MALLOC_FAIL "Error: malloc failed\n"
-#define PUSH_FAIL "L%u: usage: push integer\n"
-#define PINT_FAIL "L%u: can't pint, stack empty\n"
-#define POP_FAIL "L%u: can't pop an empty stack\n"
-#define SWAP_FAIL "L%u: can't swap, stack too short\n"
-#define ADD_FAIL "L%u: can't add, stack too short\n"
-#define SUB_FAIL "L%u: can't sub, stack too short\n"
-#define DIV_FAIL "L%u: can't div, stack too short\n"
-#define DIV_ZERO "L%u: division by zero\n"
-#define MUL_FAIL "L%u: can't mul, stack too short\n"
-#define MOD_FAIL "L%u: can't mod, stack too short\n"
-#define PCHAR_FAIL "L%u: can't pchar, stack empty\n"
-#define PCHAR_RANGE "L%u: can't pchar, value out of range\n"
+/*in move_elements_functions*/
+void swap(stack_t **h, unsigned int l);
+void rotl(stack_t **h, unsigned int l);
+void rotr(stack_t **h, unsigned int l);
 
-/* main.c */
-void monty(args_t *args);
+/*in calculations*/
+int get_argument(stack_t **h, char *opcode, unsigned int l);
+void _add(stack_t **h, unsigned int l);
+void _sub(stack_t **h, unsigned int l);
+void _div(stack_t **h, unsigned int l);
+void _mul(stack_t **h, unsigned int l);
+void _mod(stack_t **h, unsigned int l);
 
-/* get_func.c */
-void (*get_func(char **parsed))(stack_t **, unsigned int);
-void push_handler(stack_t **stack, unsigned int line_number);
-void pall_handler(stack_t **stack, unsigned int line_number);
+/*in nopandqueue*/
+void stack(stack_t **h, unsigned int l);
+void queue(stack_t **h, unsigned int l);
+void nop(stack_t **h, unsigned int l);
 
-/* handler_funcs1.c */
-void pint_handler(stack_t **stack, unsigned int line_number);
-void pop_handler(stack_t **stack, unsigned int line_number);
-void swap_handler(stack_t **stack, unsigned int line_number);
-void add_handler(stack_t **stack, unsigned int line_number);
-void nop_handler(stack_t **stack, unsigned int line_number);
+/*in helpers*/
+char *skip_spaces(char *s);
+char *reach_number(char *s);
+int _strcmp(char *s1, char *s2);
+int _strncmp(char *s1, char *s2, int n);
+int _strlen(char *s);
 
-/* handler_funcs2.c */
-void sub_handler(stack_t **stack, unsigned int line_number);
-void div_handler(stack_t **stack, unsigned int line_number);
-void mul_handler(stack_t **stack, unsigned int line_number);
-void mod_handler(stack_t **stack, unsigned int line_number);
+/* in getline.c */
+ssize_t _getline(char **buf, size_t *size, int file_strm);
 
-/* handler_funcs3.c */
-void rotl_handler(stack_t **stack, unsigned int line_number);
-void rotr_handler(stack_t **stack, unsigned int line_number);
-void stack_handler(stack_t **stack, unsigned int line_number);
-void queue_handler(stack_t **stack, unsigned int line_number);
-
-/* char.c */
-void pchar_handler(stack_t **stack, unsigned int line_number);
-void pstr_handler(stack_t **stack, unsigned int line_number);
-
-/* strtow.c */
-int count_word(char *s);
-char **strtow(char *str);
-void free_everything(char **args);
-
-/* free.c */
-void free_all(int all);
+/*in execute*/
+int execute(stack_t **h, char *line, unsigned int line_number);
 
 #endif

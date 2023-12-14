@@ -1,74 +1,52 @@
 #include "monty.h"
-#include "lists.h"
 
-data_t data = DATA_INIT;
-
-/**
- * monty - helper function for main function
- * @args: pointer to struct of arguments from main
- *
- * Description: opens and reads from the file
- * containing the opcodes, and calls the function
- * that will find the corresponding executing function
- */
-void monty(args_t *args)
-{
-	size_t len = 0;
-	int get = 0;
-	void (*code_func)(stack_t **, unsigned int);
-
-	if (args->ac != 2)
-	{
-		dprintf(STDERR_FILENO, USAGE);
-		exit(EXIT_FAILURE);
-	}
-	data.fptr = fopen(args->av, "r");
-	if (!data.fptr)
-	{
-		dprintf(STDERR_FILENO, FILE_ERROR, args->av);
-		exit(EXIT_FAILURE);
-	}
-	while (1)
-	{
-		args->line_number++;
-		get = getline(&(data.line), &len, data.fptr);
-		if (get < 0)
-			break;
-		data.words = strtow(data.line);
-		if (data.words[0] == NULL || data.words[0][0] == '#')
-		{
-			free_all(0);
-			continue;
-		}
-		code_func = get_func(data.words);
-		if (!code_func)
-		{
-			dprintf(STDERR_FILENO, UNKNOWN, args->line_number, data.words[0]);
-			free_all(1);
-			exit(EXIT_FAILURE);
-		}
-		code_func(&(data.stack), args->line_number);
-		free_all(0);
-	}
-	free_all(1);
-}
+char *flag = "stack";
 
 /**
- * main - entry point for monty bytecode interpreter
- * @argc: number of arguments
- * @argv: array of arguments
- *
- * Return: EXIT_SUCCESS or EXIT_FAILURE
+ * main - main function to run monty
+ * @ac: number of arguments
+ * @av: list of arguments as strings
+ * Return: 0
  */
-int main(int argc, char *argv[])
+int main(int ac, char **av)
 {
-	args_t args;
+	stack_t *h;
+	int exec_err, fp;
+	unsigned int line_number;
+	ssize_t status;
+	char *line;
+	size_t length;
 
-	args.av = argv[1];
-	args.ac = argc;
-	args.line_number = 0;
+	if (ac != 2)
+	{
+		printf("USAGE: monty file\n"), exit(EXIT_FAILURE);
+	}
+	h = NULL;
+	fp = open(av[1], O_RDONLY);
+	if (fp == -1)
+	{
+		printf("Error: Can't open file %s\n", av[1]);
+		exit(EXIT_FAILURE);
+	}
+	line_number = 0;
+	do {
+		++line_number;
+		line = NULL;
+		lenght = 0;
+		status = _getline(&line, &length, fp);
+		if (status > 2)
+		{
+			exec_err = execute(&h, line, line_number);
+			if (exec_err == -1)
+				status = -2;
+		}
+		else
+			free(line);
+	} while (status >= 0);
 
-	monty(&args);
-
-	return (EXIT_SUCCESS);
+	close(fp);
+	free_stack(h), h = NULL;
+	if (status == -1)
+		return (0);
+	exit(EXIT_FAILURE);
 }
