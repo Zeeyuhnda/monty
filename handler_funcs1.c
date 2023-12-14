@@ -86,7 +86,7 @@ void add_handler(stack_t **stack, unsigned int line_number)
 		free_all(1);
 		exit(EXIT_FAILURE);
 	}
-	
+
 	sum = node_0->n + node_1->n;
 	delete_dnodeint_at_index(stack, 0);
 	delete_dnodeint_at_index(stack, 0);
