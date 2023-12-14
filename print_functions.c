@@ -54,7 +54,7 @@ void pint(stack_t **h, unsigned int l)
 	{
 		printf("L%d: can't pint, stack empty\n", l);
 		free_stack(*h);
-		exit(EXITA_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	printf("%d\n", (*h)->n);
