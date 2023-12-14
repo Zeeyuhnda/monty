@@ -32,7 +32,7 @@ int main(int ac, char **av)
 	do {
 		++line_number;
 		line = NULL;
-		lenght = 0;
+		length = 0;
 		status = _getline(&line, &length, fp);
 		if (status > 2)
 		{

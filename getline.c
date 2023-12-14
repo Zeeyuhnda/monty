@@ -35,7 +35,7 @@ void fill_buffer(char **buf, size_t *size, char c, size_t index)
 			return;
 		*size = *size * 2;
 	}
-	p = *nuf;
+	p = *buf;
 	*(p + index) = c;
 }
 
